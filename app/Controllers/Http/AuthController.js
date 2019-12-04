@@ -1,5 +1,6 @@
 'use strict'
 const User = use('App/Models/User')
+const Logger = use('Logger')
 class AuthController {
 
     async login({request, auth}){
@@ -7,12 +8,16 @@ class AuthController {
         const result = await auth.attempt(email, password, {email})
         return result
     }
-    
-    async signUp(http){
-        const {request} = http;
+
+    async signUp({request, auth, response}){
         const userData = request.only(['username', 'email', 'password']);
-        await User.create(userData)
-        return this.login(http)
+        try {
+            await User.create(userData)
+            return this.login({auth, request})
+        } catch (error) {
+            Logger.error(error)
+            response.unauthorized({message: "user or email already taken"})
+        }
     }
 }
 
