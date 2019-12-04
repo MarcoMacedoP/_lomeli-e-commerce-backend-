@@ -5,7 +5,7 @@ const Model = use('Model')
 /** @type {import('@adonisjs/framework/src/Hash')} */
 const Hash = use('Hash')
 
-const Database = use('Database')
+const Logger = use('Logger')
 
 class User extends Model {
   static boot () {
@@ -19,6 +19,13 @@ class User extends Model {
       if (userInstance.dirty.password) {
         userInstance.password = await Hash.make(userInstance.password)
       }
+    })
+    /**
+     * A hook to remove the password value before return it to server
+     */
+    this.addHook('afterSave',  user =>{
+      delete user['$attributes'].password
+      return user
     })
   }
 
@@ -34,9 +41,6 @@ class User extends Model {
    */
   tokens () {
     return this.hasMany('App/Models/Token')
-  }
-  create(){
-    Database.table('users').insert()
   }
 }
 
