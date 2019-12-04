@@ -1,11 +1,18 @@
 'use strict'
-const Logger = use('Logger')
-
+const User = use('App/Models/User')
 class AuthController {
-    login({request, response}){
+
+    async login({request, auth}){
         const {email, password} = request.post()
-        
-        return {message: "Auth endpoint"}
+        const result = await auth.attempt(email, password, {email})
+        return result
+    }
+    
+    async signUp(http){
+        const {request} = http;
+        const userData = request.only(['username', 'email', 'password']);
+        await User.create(userData)
+        return this.login(http)
     }
 }
 
