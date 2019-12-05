@@ -17,10 +17,12 @@
 const Route = use('Route')
 
 Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
+  return {greeting: 'Hello world in JSON'}
 })
 //Auth
 Route.post('/auth/login', 'AuthController.login')
 Route.post('/auth/sign-up', 'AuthController.signUp')
 //User
 Route.post('/user', 'UserController.create')
+//Products
+Route.resource('/products', 'ProductController').apiOnly()
