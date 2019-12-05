@@ -10,7 +10,7 @@ class ProductsSchema extends Schema {
       table.increments('product_id')
       table.string('name', 80).notNullable()
       table.text('description', 'mediumtext')
-      table.decimal('price', 16, 2).notNullable()
+      table.decimal('price', 16).notNullable()
       table.timestamps(null, true)
     })
   }

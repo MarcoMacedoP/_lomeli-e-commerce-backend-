@@ -46,7 +46,8 @@ class ProductController {
    */
   async show({params}) {
     const {id} = params
-    const product = Product.find(id)
+    console.log(id)
+    const product = await Product.findBy('product_id', id)
     return {
       message: 'get product',
       data: product
