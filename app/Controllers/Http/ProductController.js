@@ -47,7 +47,7 @@ class ProductController {
   async show({params}) {
     const {id} = params
     console.log(id)
-    const product = await Product.findBy('product_id', id)
+    const product = await Product.find(id)
     return {
       message: 'get product',
       data: product
@@ -65,23 +65,36 @@ class ProductController {
   async update({params, request, response}) {
     const {id} = params
     const {name, description, price} = request.post()
+    console.log(request.post())
     if (id) {
-      const product = new Product()
-      product.product_id = id
-      if (name) {
-        product.name = name
+      const product = await Product.find(id)
+      if (product) {
+        if (name) {
+          product.merge({
+            name
+          })
+        }
+        if (description) {
+          product.merge({
+            description
+          })
+        }
+        if (price) {
+          product.merge({
+            price
+          })
+        }
+        console.log(product)
+        try {
+          await product.save()
+          response.status(201).json({
+            message: 'updated product',
+            data: product
+          })
+        } catch (error) {
+          console.log(error)
+        }
       }
-      if (description) {
-        product.description = description
-      }
-      if (price) {
-        product.price = price
-      }
-      await product.save()
-      response.update({
-        message: 'updated product',
-        data: product
-      })
     }
   }
 
@@ -97,7 +110,7 @@ class ProductController {
     const {id} = params
     const product = await Product.find(id)
     await product.delete()
-    response.update({
+    response.status(201).json({
       message: 'deleted product',
       data: product
     })
