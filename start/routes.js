@@ -19,10 +19,10 @@ const Route = use('Route')
 Route.get('/', () => {
   return {greeting: 'Hello world in JSON'}
 })
-//Auth
-Route.post('/auth/login', 'AuthController.login')
-Route.post('/auth/sign-up', 'AuthController.signUp')
-//User
-Route.post('/user', 'UserController.create')
+//**** User *******
+//User - Auth
+Route.post('/auth/login', 'User/AuthController.login')
+Route.post('/auth/sign-up', 'User/AuthController.signUp')
+Route.post('/user', 'User/UserController.create')
 //Products
 Route.resource('/products', 'ProductController').apiOnly()

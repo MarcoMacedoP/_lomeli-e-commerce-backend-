@@ -9,13 +9,13 @@ class AuthController {
   }
 
   async signUp({request, auth, response}) {
-    const userData = request.only(['email', 'password'])
-    try {
-      await User.create(userData)
-      return this.login({auth, request})
-    } catch (error) {
+    const userData = request.only(['email', 'password', 'name'])
+    const userCreated = await User.create(userData).catch(error => {
       Logger.error(error)
       response.unauthorized({message: 'user or email already taken'})
+    })
+    if (userCreated) {
+      return this.login({auth, request})
     }
   }
   async forgetPassword({request}) {
