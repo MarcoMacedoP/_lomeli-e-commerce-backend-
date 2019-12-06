@@ -5,19 +5,18 @@ const Schema = use('Schema')
 
 class UserSchema extends Schema {
   up() {
-    this.create('users', table => {
-      table.increments()
-      table
-        .string('username', 80)
-        .notNullable()
-        .unique()
-      table
-        .string('email', 254)
-        .notNullable()
-        .unique()
-      table.string('password', 60).notNullable()
-      table.timestamps()
-    })
+    this.create('users', table =>
+      // prettier-ignore
+      {
+        table.increments()
+        table.string('email', 254).notNullable().unique() 
+        table.string('name', 100).notNullable()
+        table.string('password', 60).notNullable()
+        table.enu('type', ['root', 'admin', 'support']).defaultTo('support').notNullable()
+        table.enu('status', ['active', 'inactive']).defaultTo('active').notNullable()
+        table.timestamps()
+    }
+    )
   }
 
   down() {
