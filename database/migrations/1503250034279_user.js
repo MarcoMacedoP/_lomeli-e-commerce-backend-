@@ -15,7 +15,7 @@ class UserSchema extends Schema {
         table.enu('type', ['root', 'admin', 'support']).defaultTo('support').notNullable()
         table.enu('status', ['active', 'inactive']).defaultTo('active').notNullable()
         table.timestamps()
-    }
+      }
     )
   }
 

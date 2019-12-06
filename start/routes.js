@@ -20,9 +20,10 @@ Route.get('/', () => {
   return {greeting: 'Hello world in JSON'}
 })
 //**** User *******
-//User - Auth
-Route.post('/auth/login', 'User/AuthController.login')
-Route.post('/auth/sign-up', 'User/AuthController.signUp')
 Route.post('/user', 'User/UserController.create')
+//User - Auth
+Route.post('/user/auth/login', 'User/AuthController.login')
+Route.post('/user/auth/sign-up', 'User/AuthController.signUp')
+Route.post('/user/auth/recover-password', 'User/AuthController.forgetPassword')
 //Products
 Route.resource('/products', 'ProductController').apiOnly()

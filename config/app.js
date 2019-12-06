@@ -4,7 +4,6 @@
 const Env = use('Env')
 
 module.exports = {
-
   /*
   |--------------------------------------------------------------------------
   | Application Name
@@ -81,7 +80,6 @@ module.exports = {
     |
     */
     jsonpCallback: 'callback',
-
 
     /*
     |--------------------------------------------------------------------------
@@ -239,5 +237,11 @@ module.exports = {
     sameSite: false,
     path: '/',
     maxAge: 7200
+  },
+  email: {
+    user: Env.get('EMAIL_USER'),
+    password: Env.get('EMAIL_PASSWORD'),
+    host: Env.get('EMAIL_HOST'),
+    port: Env.get('EMAIL_PORT')
   }
 }

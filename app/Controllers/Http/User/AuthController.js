@@ -1,5 +1,10 @@
 'use strict'
 const User = use('App/Models/User')
+const ForgetedPassword = use('App/Models/ForgetedPassword')
+const crypto = require('crypto')
+const Util = require('util')
+const randomBytes = Util.promisify(crypto.randomBytes)
+
 const Logger = use('Logger')
 class AuthController {
   async login({request, auth}) {
@@ -20,6 +25,21 @@ class AuthController {
   }
   async forgetPassword({request}) {
     const {email} = request.all()
+    const user = await User.findBy('email', email)
+    if (user) {
+      const forgetedPassword = new ForgetedPassword()
+      const token = (await randomBytes(24)).toString('base64').replace(/\W/g, '')
+      forgetedPassword.fill({
+        requester_id: user.id,
+        requested_type: 'client',
+        token,
+        email
+      })
+      forgetedPassword.save()
+    }
+    return {
+      message: `If ${email} is user we will sent an email to recover his password`
+    }
   }
 }
 
