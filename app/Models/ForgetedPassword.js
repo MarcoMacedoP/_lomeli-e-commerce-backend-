@@ -11,6 +11,7 @@ class ForgetedPassword extends Model {
     super.boot()
 
     this.addHook('afterCreate', async forgetedPasswordInstance => {
+      //TODO: Probably separate this into another file, just for e-mails
       const transport = mail.createTransport({
         host: Config.get('app.email.host'),
         port: Config.get('app.email.port'),

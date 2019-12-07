@@ -24,6 +24,10 @@ Route.post('/user', 'User/UserController.create')
 //User - Auth
 Route.post('/user/auth/login', 'User/AuthController.login')
 Route.post('/user/auth/sign-up', 'User/AuthController.signUp')
-Route.post('/user/auth/recover-password', 'User/AuthController.forgetPassword')
+Route.post(
+  '/user/auth/request-recover-password',
+  'User/AuthController.forgetPassword'
+)
+Route.post('/user/auth/recover-password', 'User/AuthController.recoverPassword')
 //Products
 Route.resource('/products', 'ProductController').apiOnly()
