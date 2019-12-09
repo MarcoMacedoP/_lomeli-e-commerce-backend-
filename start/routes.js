@@ -30,4 +30,4 @@ Route.post(
 )
 Route.post('/user/auth/recover-password', 'User/AuthController.recoverPassword')
 //Products
-Route.resource('/products', 'ProductController').apiOnly()
+Route.resource('/products', 'Products/ProductController').apiOnly()

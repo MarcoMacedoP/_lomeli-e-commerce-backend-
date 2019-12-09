@@ -32,7 +32,15 @@ class ProductController {
    * @param {Response} ctx.response
    */
   async store({request}) {
-    const productData = request.only(['name', 'description', 'price'])
+    const productData = request.only([
+      'name',
+      'description',
+      'price',
+      'categorie_id',
+      'sku',
+      'user_id',
+      'status'
+    ])
     const createdProduct = await Product.create(productData)
     return {
       message: 'created product',
