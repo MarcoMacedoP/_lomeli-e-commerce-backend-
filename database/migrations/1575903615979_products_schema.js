@@ -4,7 +4,6 @@
 const Schema = use('Schema')
 
 class ProductsSchema extends Schema {
-  // prettier-ignore
   up () {
     this.create('products', (table) => {
       table.increments()
