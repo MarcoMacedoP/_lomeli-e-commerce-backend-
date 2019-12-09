@@ -5,7 +5,6 @@ const Schema = use('Schema')
 
 class CategorieSchema extends Schema {
   up() {
-    //prettier-ignore
     this.create('categories', table => {
       table.increments()
       table.integer('parent_id')
