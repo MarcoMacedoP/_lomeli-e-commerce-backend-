@@ -6,7 +6,8 @@ const Logger = use('Logger')
 class AuthController {
   async login({request, auth}) {
     const {email, password} = request.post()
-    const result = await auth.attempt(email, password, {email})
+    const user = await User.findBy('email', email)
+    const result = await auth.attempt(email, password, {email, role: user.type})
     return result
   }
 

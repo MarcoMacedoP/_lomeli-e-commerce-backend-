@@ -31,5 +31,16 @@ class JWT {
       })
     })
   }
+  /**
+   * Decodes the token from the header
+   * @param {string} headerBearer
+   */
+  static decodeFromHeader(headerBearer) {
+    const cleanedToken = headerBearer.split('Bearer ')[1]
+    console.log(cleanedToken)
+    return jsonWebToken.decode(cleanedToken)
+  }
+
+  static extractFromBearerHeader(bearerToken) {}
 }
 module.exports = JWT

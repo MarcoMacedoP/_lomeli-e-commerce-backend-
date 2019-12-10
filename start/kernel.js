@@ -36,6 +36,7 @@ const globalMiddleware = [
 */
 const namedMiddleware = {
   auth: 'Adonis/Middleware/Auth',
+  role: 'App/Middleware/CheckRequestRole',
   guest: 'Adonis/Middleware/AllowGuestOnly'
 }
 
@@ -54,7 +55,6 @@ const serverMiddleware = [
   'Adonis/Middleware/Cors'
 ]
 
-Server
-  .registerGlobal(globalMiddleware)
+Server.registerGlobal(globalMiddleware)
   .registerNamed(namedMiddleware)
   .use(serverMiddleware)
