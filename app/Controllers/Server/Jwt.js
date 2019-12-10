@@ -6,7 +6,6 @@ const TEN_MINUTES_EXP = Math.floor(Date.now() / 1000) + 60 * 10
 
 class JWT {
   static sign(payload) {
-    console.log(payload)
     return new Promise((resolve, reject) => {
       const finalPayload = payload.exp
         ? {payload}

@@ -7,8 +7,9 @@ class OrderSchema extends Schema {
   up () {
     this.create('orders', table => {
       table.increments()
-      table.integer('client_id').unsigned().references('id').inTable('clients').notNull(9)
+      table.integer('client_id').unsigned().references('id').inTable('clients').notNull()
       table.integer('code_id').unsigned().references('id').inTable('codes')
+      table.string('guide', 255).notNullable()
       table.decimal('mount', 10).notNull()
       table.enu('status', ['active', 'inactive']).defaultTo('active').notNullable()
       table.timestamps()
