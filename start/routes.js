@@ -31,3 +31,7 @@ Route.post(
 Route.post('/user/auth/recover-password', 'User/AuthController.recoverPassword')
 //Products
 Route.resource('/products', 'Products/ProductController').apiOnly()
+//Clients
+Route.resource('/clients', 'Clients/ClientController')
+  .apiOnly()
+  .middleware(['auth'])
