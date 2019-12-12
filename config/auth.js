@@ -50,7 +50,7 @@ module.exports = {
   */
   basic: {
     serializer: 'lucid',
-    model: 'App/Models/User',
+    model: 'App/Models/Users/User',
     scheme: 'basic',
     uid: 'email',
     password: 'password'
@@ -67,7 +67,7 @@ module.exports = {
   */
   jwt: {
     serializer: 'lucid',
-    model: 'App/Models/User',
+    model: 'App/Models/Users/User',
     scheme: 'jwt',
     uid: 'email',
     password: 'password',
@@ -87,9 +87,31 @@ module.exports = {
   */
   api: {
     serializer: 'lucid',
-    model: 'App/Models/User',
+    model: 'App/Models/Users/User',
     scheme: 'api',
     uid: 'email',
     password: 'password'
+  },
+  client: {
+    serializer: 'lucid',
+    model: 'App/Models/Clients/Client',
+    scheme: 'jwt',
+    uid: 'email',
+    password: 'password',
+    options: {
+      secret: Env.get('APP_KEY'),
+      expiresIn: '4m'
+    }
+  },
+  user: {
+    serializer: 'lucid',
+    model: 'App/Models/Users/User',
+    scheme: 'jwt',
+    uid: 'email',
+    password: 'password',
+    options: {
+      secret: Env.get('USERS_KEY'),
+      expiresIn: '4m'
+    }
   }
 }

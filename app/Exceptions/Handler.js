@@ -1,7 +1,7 @@
 'use strict'
 const Logger = use('Logger')
 const BaseExceptionHandler = use('BaseExceptionHandler')
-
+const SQL_DUPLICATE_ENTRY_FOR_EMAIL = /.*ER_DUP_ENTRY.*email_unique.*/
 /**
  * This class handles all exceptions thrown during
  * the HTTP request lifecycle.
@@ -21,10 +21,14 @@ class ExceptionHandler extends BaseExceptionHandler {
    * @return {void}
    */
   async handle(error, {response}) {
-    response.status(error.status).json({
-      message: error.message,
-      error: error.name
-    })
+    if (error.message.match(SQL_DUPLICATE_ENTRY_FOR_EMAIL)) {
+      response.unauthorized({message: 'This email is already in use :('})
+    } else {
+      response.status(error.status).json({
+        message: error.message,
+        error: error.name
+      })
+    }
   }
 
   /**
@@ -38,7 +42,8 @@ class ExceptionHandler extends BaseExceptionHandler {
    * @return {void}
    */
   async report(error, {request}) {
-    Logger.error(error)
+    Logger.error('error message: ' + error.message)
+    Logger.error('error name: ' + error.name)
   }
 }
 

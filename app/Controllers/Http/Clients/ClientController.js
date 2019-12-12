@@ -1,4 +1,6 @@
 'use strict'
+/**@typedef {import('../../../Models/Clients/Client')} Client */
+const Client = use('App/Models/Clients/Client')
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
@@ -14,7 +16,10 @@ class ClientController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async index({request, response}) {}
+  async index({request, response}) {
+    const clients = await Client.all()
+    return {message: 'get all clients', data: clients}
+  }
   /**
    * Create/save a new client.
    * POST clients
@@ -23,7 +28,7 @@ class ClientController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({request, response}) {}
+  async store({request, auth}) {}
 
   /**
    * Display a single client.
@@ -33,7 +38,7 @@ class ClientController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async show({params, request, response}) {}
+  async show({params}) {}
 
   /**
    * Update client details.

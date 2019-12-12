@@ -19,20 +19,22 @@ const Route = use('Route')
 Route.get('/', () => {
   return {greeting: 'Hello world in JSON'}
 })
-//**** User *******
-Route.post('/user', 'User/UserController.create')
-//User - Auth
-Route.post('/user/auth/login', 'User/AuthController.login')
-Route.post('/user/auth/sign-up', 'User/AuthController.signUp')
-Route.post(
-  '/user/auth/request-recover-password',
-  'User/AuthController.forgetPassword'
-)
-Route.post('/user/auth/recover-password', 'User/AuthController.recoverPassword')
+
+const API_V1 = '/api/v1'
+
+Route.group(() => {
+  Route.post('/auth/login', 'User/AuthController.login')
+  Route.post('/auth/sign-up', 'User/AuthController.signUp')
+  Route.post('/auth/request-recover-password', 'User/AuthController.forgetPassword')
+  Route.post('/auth/recover-password', 'User/AuthController.recoverPassword')
+}).prefix('/api/v1/user')
+
+//Clients
+Route.group(() => {
+  Route.resource('/', 'Clients/ClientController').apiOnly()
+  Route.post('/auth/sign-up', 'Clients/AuthController.signUp')
+  Route.post('/auth/login', 'Clients/AuthController.login')
+}).prefix('/api/v1/clients')
+
 //Products
 Route.resource('/products', 'Products/ProductController').apiOnly()
-//Clients
-Route.resource('/clients', 'Clients/ClientController')
-  .apiOnly()
-  .middleware(['auth'])
-  .middleware('role')
