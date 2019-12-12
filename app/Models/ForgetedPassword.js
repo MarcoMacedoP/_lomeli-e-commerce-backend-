@@ -32,21 +32,16 @@ class ForgetedPassword extends Model {
     super.boot()
 
     this.addHook('afterFind', async forgetedPasswordInstance => {
-      console.log(forgetedPasswordInstance)
       if (!forgetedPasswordInstance) {
-        console.log('lol')
         throw new InvalidRecoverPasswordException({reason: 'No token founded'})
       }
       const {status, token} = forgetedPasswordInstance
       if (status !== 'active')
-        new InvalidRecoverPasswordException({reason: 'token is not active'})
+        throw new InvalidRecoverPasswordException({reason: 'token is not active'})
       try {
         await JWT.verify(token)
-        /*  forgetedPasswordInstance.fill({
-            ...forgetedPasswordInstance,
-            status: 'inactive'
-          })
-          forgetedPasswordInstance.save() */
+        forgetedPasswordInstance.status = 'inactive'
+        forgetedPasswordInstance.save()
         return forgetedPasswordInstance
       } catch (error) {
         throw new InvalidRecoverPasswordException({reason: error})

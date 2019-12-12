@@ -72,7 +72,6 @@ class AuthController {
     if (!forgetPassword) {
       throw new InvalidRecoverPasswordException({reason: `Don't found`})
     } else if (forgetPassword.requested_type !== 'client') {
-      response.unauthorized({message: 'Not a client'})
       throw new InvalidRecoverPasswordException({
         reason: `Trying to modify a client.`
       })
