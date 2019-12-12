@@ -34,6 +34,8 @@ Route.group(() => {
   Route.resource('/', 'Clients/ClientController').apiOnly()
   Route.post('/auth/sign-up', 'Clients/AuthController.signUp')
   Route.post('/auth/login', 'Clients/AuthController.login')
+  Route.post('/auth/forget-password', 'Clients/AuthController.forgetPassword')
+  Route.post('/auth/recover-password', 'Clients/AuthController.recoverPassword')
 }).prefix('/api/v1/clients')
 
 //Products

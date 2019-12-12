@@ -4,11 +4,54 @@
 const Model = use('Model')
 const mail = require('nodemailer')
 const Config = use('Config')
-const Logger = use('Logger')
-
+const JWT = use('App/Controllers/Server/Jwt')
+const InvalidRecoverPasswordException = use(
+  'App/Exceptions/InvalidRecoverPasswordException'
+)
 class ForgetedPassword extends Model {
+  static message = 'If email is user we will sent an email to recover his password'
+  /**
+   * Generate into forgeted_passwords table
+   */
+  static async generate({email, type, id}) {
+    const forgetedPassword = new ForgetedPassword()
+    const token = await JWT.sign({
+      email
+    })
+    forgetedPassword.fill({
+      requester_id: id,
+      requested_type: type,
+      token,
+      email
+    })
+    forgetedPassword.save()
+    return token
+  }
+
   static boot() {
     super.boot()
+
+    this.addHook('afterFind', async forgetedPasswordInstance => {
+      console.log(forgetedPasswordInstance)
+      if (!forgetedPasswordInstance) {
+        console.log('lol')
+        throw new InvalidRecoverPasswordException({reason: 'No token founded'})
+      }
+      const {status, token} = forgetedPasswordInstance
+      if (status !== 'active')
+        new InvalidRecoverPasswordException({reason: 'token is not active'})
+      try {
+        await JWT.verify(token)
+        /*  forgetedPasswordInstance.fill({
+            ...forgetedPasswordInstance,
+            status: 'inactive'
+          })
+          forgetedPasswordInstance.save() */
+        return forgetedPasswordInstance
+      } catch (error) {
+        throw new InvalidRecoverPasswordException({reason: error})
+      }
+    })
 
     this.addHook('afterCreate', async forgetedPasswordInstance => {
       //TODO: Probably separate this into another file, just for e-mails
@@ -27,10 +70,10 @@ class ForgetedPassword extends Model {
         html: `<h1>Recupera tu contraseña</h1>
                     <p>Si no solicitaste un cambio de contraseña, ignora esto. </p>`
       }
-      transport.sendMail(message, (error, info) => {
+      /* transport.sendMail(message, (error, info) => {
         if (error) Logger.error(`Error on send email: ${error}`)
         if (info) Logger.info(info)
-      })
+      }) */
     })
   }
 }

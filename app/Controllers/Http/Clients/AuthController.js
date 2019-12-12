@@ -1,6 +1,9 @@
 'use strict'
 const Client = use('App/Models/Clients/Client')
-
+const ForgetedPassword = use('App/Models/ForgetedPassword')
+const InvalidRecoverPasswordException = use(
+  'App/Exceptions/InvalidRecoverPasswordException'
+)
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 
@@ -47,8 +50,39 @@ class AuthController {
       }
     }
   }
-  forgetPassword() {}
-  recoverPassword() {}
+  async forgetPassword({request}) {
+    const {email} = request.all()
+    const client = await Client.findBy('email', email)
+    const data = {
+      message: ForgetedPassword.message
+    }
+    if (client) {
+      const token = await ForgetedPassword.generate({
+        email,
+        type: 'client',
+        id: client.id
+      })
+      data.token = token
+    }
+    return data
+  }
+  async recoverPassword({request, response}) {
+    const {token, newPassword, email} = request.post()
+    const forgetPassword = await ForgetedPassword.findBy('token', token)
+    if (!forgetPassword) {
+      throw new InvalidRecoverPasswordException({reason: `Don't found`})
+    } else if (forgetPassword.requested_type !== 'client') {
+      response.unauthorized({message: 'Not a client'})
+      throw new InvalidRecoverPasswordException({
+        reason: `Trying to modify a client.`
+      })
+    } else {
+      const client = await Client.findBy('email', email)
+      client.password = newPassword
+      client.save()
+      return {message: 'updated client password'}
+    }
+  }
 }
 
 module.exports = AuthController

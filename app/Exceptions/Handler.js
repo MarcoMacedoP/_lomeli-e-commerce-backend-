@@ -42,8 +42,7 @@ class ExceptionHandler extends BaseExceptionHandler {
    * @return {void}
    */
   async report(error, {request}) {
-    Logger.error('error message: ' + error.message)
-    Logger.error('error name: ' + error.name)
+    Logger.error(error)
   }
 }
 
