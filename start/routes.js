@@ -40,6 +40,7 @@ Route.group(() => {
 
 //Products
 Route.group(() => {
+  Route.resource('/categories', 'Products/CategoryController').apiOnly()
   Route.resource('/', 'Products/ProductController').apiOnly().validator(new Map([
     [['products.store'], ['Products/Store']]
   ]))
