@@ -10,6 +10,11 @@ const Category = use('App/Models/Products/Category')
  * Resourceful controller for interacting with products
  */
 class ProductController {
+
+  constructor() {
+    this.notFound = { message: 'Product not found' }
+  }
+
   /**
    * Show a list of all products.
    * GET products
@@ -51,7 +56,9 @@ class ProductController {
     const createdProduct = await Product.create(productData)
     return {
       message: 'created product',
-      data: createdProduct
+      data: {
+        createdProduct
+      }
     }
 
 
@@ -61,14 +68,16 @@ class ProductController {
    * Display a single product.
    * GET products/:id
    */
-  async show({ params }) {
+  async show({ params, response }) {
     const { id } = params
-    console.log(id)
     const product = await Product.find(id)
-    return {
-      message: 'get product',
-      data: product
+    if (product) {
+      return {
+        message: 'get product',
+        data: { product }
+      }
     }
+    else response.notFound(this.notFound)
   }
 
   /**
@@ -81,40 +90,23 @@ class ProductController {
    */
   async update({ params, request, response }) {
     const { id } = params
-    const { name, description, price } = request.post()
-    console.log(request.post())
-    if (id) {
-      const product = await Product.find(id)
-      if (product) {
-        if (name) {
-          product.merge({
-            name
-          })
-        }
-        if (description) {
-          product.merge({
-            description
-          })
-        }
-        if (price) {
-          product.merge({
-            price
-          })
-        }
-        console.log(product)
-        try {
-          await product.save()
-          response.status(201).json({
-            message: 'updated product',
-            data: product
-          })
-        } catch (error) {
-          console.log(error)
-        }
-      }
+    const productData = request.only(['name', 'description', 'price'])
+    const product = id && await Product.find(id)
+
+    if (product) {
+
+      Object.keys(productData).forEach(key => key &&
+        product.merge({ [key]: productData[key] }))
+
+      await product.save()
+      response.created({
+        message: 'updated product',
+        data: { product }
+      })
+    } else {
+      return response.notFound(this.notFound)
     }
   }
-
   /**
    * Delete a product with id.
    * DELETE products/:id
@@ -126,11 +118,15 @@ class ProductController {
   async destroy({ params, response }) {
     const { id } = params
     const product = await Product.find(id)
-    await product.delete()
-    response.status(201).json({
-      message: 'deleted product',
-      data: product
-    })
+    if (product) {
+      await product.delete()
+      response.accepted({
+        message: 'deleted product',
+        data: { product }
+      })
+    } else {
+      response.notFound(this.notFound)
+    }
   }
 }
 
