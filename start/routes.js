@@ -17,7 +17,7 @@
 const Route = use('Route')
 
 Route.get('/', () => {
-  return {greeting: 'Hello world in JSON'}
+  return { greeting: 'Hello world in JSON' }
 })
 //**** User *******
 Route.post('/user', 'User/UserController.create')
@@ -30,4 +30,6 @@ Route.post(
 )
 Route.post('/user/auth/recover-password', 'User/AuthController.recoverPassword')
 //Products
-Route.resource('/products', 'ProductController').apiOnly()
+Route.resource('/products', 'ProductController').apiOnly().validator(new Map([
+  [['products.store'], ['Products/Store']]
+]))
