@@ -40,7 +40,7 @@ Route.group(() => {
 
 //Products
 Route.group(() => {
-  Route.resource('/', 'ProductController').apiOnly().validator(new Map([
+  Route.resource('/', 'Products/ProductController').apiOnly().validator(new Map([
     [['products.store'], ['Products/Store']]
   ]))
 }).prefix(`${API_V1}/products`)

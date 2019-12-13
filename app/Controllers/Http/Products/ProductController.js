@@ -4,8 +4,8 @@
 /** @typedef {import('@adonisjs/framework/src/Response')} Response */
 /** @typedef {import('@adonisjs/framework/src/View')} View */
 
-const Product = use('App/Models/Product')
-
+const Product = use('App/Models/Products/Product')
+const Category = use('App/Models/Products/Category')
 /**
  * Resourceful controller for interacting with products
  */
@@ -21,7 +21,7 @@ class ProductController {
    */
   async index() {
     const products = await Product.all()
-    return {message: 'get all products', data: products}
+    return { message: 'get all products', data: products }
   }
   /**
    * Create/save a new product.
@@ -31,29 +31,38 @@ class ProductController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({request}) {
+  async store({ request }) {
     const productData = request.only([
       'name',
       'description',
       'price',
       'categorie_id',
-      'sku',
       'user_id',
       'status'
     ])
+    if (!productData.categorie_id) {
+      const { categoryName } = request.post()
+      const category = new Category()
+      category.name = categoryName
+      category.user_id = productData.user_id
+      await category.save()
+      productData.categorie_id = category.id
+    }
     const createdProduct = await Product.create(productData)
     return {
       message: 'created product',
       data: createdProduct
     }
+
+
   }
 
   /**
    * Display a single product.
    * GET products/:id
    */
-  async show({params}) {
-    const {id} = params
+  async show({ params }) {
+    const { id } = params
     console.log(id)
     const product = await Product.find(id)
     return {
@@ -70,9 +79,9 @@ class ProductController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({params, request, response}) {
-    const {id} = params
-    const {name, description, price} = request.post()
+  async update({ params, request, response }) {
+    const { id } = params
+    const { name, description, price } = request.post()
     console.log(request.post())
     if (id) {
       const product = await Product.find(id)
@@ -114,8 +123,8 @@ class ProductController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy({params, response}) {
-    const {id} = params
+  async destroy({ params, response }) {
+    const { id } = params
     const product = await Product.find(id)
     await product.delete()
     response.status(201).json({
