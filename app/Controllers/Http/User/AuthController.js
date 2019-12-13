@@ -1,75 +1,79 @@
 'use strict'
-const User = use('App/Models/User')
+const User = use('App/Models/Users/User')
 const ForgetedPassword = use('App/Models/ForgetedPassword')
-const JWT = require('../../Server/Jwt')
-const Logger = use('Logger')
+const InvalidRecoverPasswordException = use(
+  'App/Exceptions/InvalidRecoverPasswordException'
+)
+
 class AuthController {
-  async login({request, auth}) {
-    const {email, password} = request.post()
+  async _authUser({email, password, auth, response}) {
+    const userAuth = auth.authenticator('user')
     const user = await User.findBy('email', email)
-    const result = await auth.attempt(email, password, {email, role: user.type})
-    return result
+    if (!user) {
+      response.unauthorized({message: 'Unauthorized'})
+    } else {
+      const token = await userAuth.attempt(email, password, {email, role: user.type})
+      //remove user password from response
+      delete user['$attributes'].password
+
+      return {
+        token,
+        user
+      }
+    }
+  }
+  async login({request, auth, response}) {
+    const {email, password} = request.post()
+    const result = await this._authUser({response, email, password, auth})
+    return {message: 'user loged ', data: result}
   }
 
-  async signUp({request, auth, response}) {
+  async signUp({response, request, auth}) {
     const userData = request.only(['email', 'password', 'name'])
-    const userCreated = await User.create(userData).catch(error => {
-      Logger.error(error)
-      response.unauthorized({message: 'user or email already taken'})
+    await User.create(userData)
+    const result = await this._authUser({
+      email: userData.email,
+      password: userData.password,
+      auth,
+      response
     })
-    if (userCreated) {
-      return this.login({auth, request})
+    return {
+      message: 'user signed up',
+      data: result
     }
   }
   async forgetPassword({request}) {
     const {email} = request.all()
     const user = await User.findBy('email', email)
+    const data = {message: ForgetedPassword.message}
     if (user) {
-      const forgetedPassword = new ForgetedPassword()
-      const token = await JWT.sign({
-        email
+      const token = await ForgetedPassword.generate({
+        email,
+        type: 'user',
+        id: user.id
       })
-      forgetedPassword.fill({
-        requester_id: user.id,
-        requested_type: 'client',
-        token,
-        email
-      })
-      forgetedPassword.save()
+      data.token = token && token
     }
-    return {
-      message: `If ${email} is user we will sent an email to recover his password`
-    }
+    return data
   }
-  async recoverPassword({request, response}) {
-    const {token, newPassword} = request.all()
-    if (!token || !newPassword) {
-      response.unauthorized({message: 'No token provided'})
-    } else {
-      //query the token and the status of token
-      const passwordToken = await ForgetedPassword.findBy('token', token)
-      //if token is not valid this will be false.
-      const isValidToken = await JWT.verify(token).catch(error => {
-        Logger.error(error)
-        return false
+  async recoverPassword({request}) {
+    const {token, newPassword} = request.post()
+    const forgetPassword = await ForgetedPassword.findBy('token', token)
+    if (!forgetPassword) {
+      throw new InvalidRecoverPasswordException({reason: `Don't found`})
+    } else if (forgetPassword.requested_type !== 'user') {
+      throw new InvalidRecoverPasswordException({
+        reason: `Trying to modify a user.`
       })
-      //everthing fine with the token?
-      if (passwordToken && passwordToken.status === 'active' && isValidToken) {
-        //update user
-        const user = await User.find(passwordToken.requester_id)
-        user.password = newPassword
-        user.save()
-        //set token as inactive
-        passwordToken.status = 'inactive'
-        passwordToken.save()
-        return {
-          message: 'updated user',
-          data: {
-            userId: user.id
-          }
+    } else {
+      const user = await User.find(passwordToken.requester_id)
+      user.password = newPassword
+      user.save()
+      return {
+        message: 'updated user',
+        data: {
+          userId: user.id
         }
-      } else {
-        response.unauthorized({message: 'Token is not valid'})
       }
     }
   }

@@ -32,9 +32,6 @@ class ForgetedPassword extends Model {
     super.boot()
 
     this.addHook('afterFind', async forgetedPasswordInstance => {
-      if (!forgetedPasswordInstance) {
-        throw new InvalidRecoverPasswordException({reason: 'No token founded'})
-      }
       const {status, token} = forgetedPasswordInstance
       if (status !== 'active')
         throw new InvalidRecoverPasswordException({reason: 'token is not active'})
