@@ -36,6 +36,7 @@ Route.group(() => {
   Route.post('/auth/login', 'Clients/AuthController.login')
   Route.post('/auth/forget-password', 'Clients/AuthController.forgetPassword')
   Route.post('/auth/recover-password', 'Clients/AuthController.recoverPassword')
+  Route.resource('/payment', 'Clients/PaymentController')
 }).prefix(`${API_V1}/clients`)
 
 //Products
