@@ -7,6 +7,10 @@ class Wishlist extends Model {
     user() {
         return this.hasOne('App/Models/Clients/Client')
     }
+    products() {
+        return this.belongsToMany('App/Models/Products/Product')
+            .pivotModel('App/Models/Clients/WishlistProduct')
+    }
 }
 
 module.exports = Wishlist
