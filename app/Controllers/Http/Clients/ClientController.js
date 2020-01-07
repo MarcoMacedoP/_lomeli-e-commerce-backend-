@@ -1,5 +1,4 @@
 'use strict'
-/**@typedef {import('../../../Models/Clients/Client')} Client */
 const Client = use('App/Models/Clients/Client')
 
 /** @typedef {import('@adonisjs/framework/src/Request')} Request */
@@ -16,9 +15,9 @@ class ClientController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async index({request, response}) {
-    const clients = await Client.all()
-    return {message: 'get all clients', data: clients}
+  async index({ request, response }) {
+    const clients = await Client.all() //BUG: why this isn't working??
+    return { message: 'get all clients', data: clients }
   }
   /**
    * Create/save a new client.
@@ -28,7 +27,7 @@ class ClientController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({request, auth}) {}
+  async store({ request, auth }) { }
 
   /**
    * Display a single client.
@@ -38,7 +37,7 @@ class ClientController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async show({params}) {}
+  async show({ params }) { }
 
   /**
    * Update client details.
@@ -48,7 +47,7 @@ class ClientController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async update({params, request, response}) {}
+  async update({ params, request, response }) { }
 
   /**
    * Delete a client with id.
@@ -58,7 +57,7 @@ class ClientController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async destroy({params, request, response}) {}
+  async destroy({ params, request, response }) { }
 }
 
 module.exports = ClientController

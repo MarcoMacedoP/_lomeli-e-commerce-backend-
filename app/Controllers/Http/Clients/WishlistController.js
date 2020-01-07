@@ -18,6 +18,8 @@ class WishlistController {
    * @param {View} ctx.view
    */
   async index({ request, response, view }) {
+    return { message: 'hello there' }
+
   }
 
 
@@ -31,6 +33,7 @@ class WishlistController {
    * @param {Response} ctx.response
    */
   async store({ request, response }) {
+    return { message: 'hello there' }
   }
 
   /**
@@ -43,6 +46,7 @@ class WishlistController {
    * @param {View} ctx.view
    */
   async show({ params, request, response, view }) {
+    return { message: 'hello there' }
   }
 
 
@@ -55,6 +59,7 @@ class WishlistController {
    * @param {Response} ctx.response
    */
   async update({ params, request, response }) {
+    return { message: 'hello there' }
   }
 
   /**
@@ -66,6 +71,7 @@ class WishlistController {
    * @param {Response} ctx.response
    */
   async destroy({ params, request, response }) {
+    return { message: 'hello there' }
   }
 }
 

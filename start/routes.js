@@ -32,7 +32,7 @@ Route.group(() => {
 //Clients
 Route.group(() => {
   Route.resource('/', 'Clients/ClientController').apiOnly()
-  Route.resource('/wishlist', 'Clients/').apiOnly()
+  Route.resource('/wishlist', 'Clients/WishlistController').apiOnly().middleware(['role'])
   Route.post('/auth/sign-up', 'Clients/AuthController.signUp')
   Route.post('/auth/login', 'Clients/AuthController.login')
   Route.post('/auth/forget-password', 'Clients/AuthController.forgetPassword')
