@@ -26,7 +26,10 @@ class Client extends Model {
     })
   }
   payments() {
-    return this.hasMany('App/Clients/Payment')
+    return this.hasMany('App/Models/Clients/Payment')
+  }
+  wishlist() {
+    return this.hasOne('App/Models/Clients/Wishlist')
   }
 }
 
