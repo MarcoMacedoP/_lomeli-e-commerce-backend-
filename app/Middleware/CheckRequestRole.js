@@ -1,5 +1,8 @@
 'use strict'
-const SUPPORT_SCOPES = [/\/clients\/.*/]
+const SUPPORT_SCOPES = [{
+  url: /\/clients\/.*/,// url: /clients/*
+  self: false
+}]
 const CLIENT_SCOPES = [
   {
     url: /\/clients\/wishlist\/[0-9A-Za-z]+/,  //url: /clients/wishlist/[clientId]
@@ -49,26 +52,16 @@ class CheckRequestRole {
     if (!role || !route) {
       throw new InvalidRoleException({ route, message: 'invalid role or route' })
     }
+    const scopes = role === 'support' ? SUPPORT_SCOPES : CLIENT_SCOPES;
+    return this.validateScopes({ scopes, route, userId, routeId })
+  }
+  validateScopes({ scopes = [], route, userId, routeId }) {
     const normalizedRoute = route.split(API_VERSION)[1]
-    let canAccessRoute = false
-    switch (role) {
-      case 'support':
-        SUPPORT_SCOPES.forEach(scope => {
-          if (scope.test(normalizedRoute)) {
-            canAccessRoute = true
-          }
-        })
-        break;
-      case 'client':
-        return CLIENT_SCOPES.find(scope =>
-          scope.url.test(normalizedRoute) && scope.self ? userId === routeId : true)
-
-
-      default:
-        throw new InvalidRoleException({ route, message: 'dafult, lol' })
-
-    }
-    return canAccessRoute
+    const canAccessRoute = scopes.find(scope => scope.url.test(normalizedRoute) && scope.self ? userId === routeId : true)
+    if (!canAccessRoute)
+      throw new InvalidRoleException({ route })
+    else
+      return true
   }
 
 }
