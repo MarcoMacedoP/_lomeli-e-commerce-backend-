@@ -4,16 +4,15 @@
 const Schema = use('Schema')
 
 class WishlistSchema extends Schema {
-  up () {
+  up() {
     this.create('wishlists', table => {
       table.increments()
       table.integer('client_id').unsigned().references('id').inTable('clients')
-      table.integer('product_id').unsigned().references('id').inTable('products')
       table.timestamps()
     })
   }
 
-  down () {
+  down() {
     this.drop('wishlists')
   }
 }
