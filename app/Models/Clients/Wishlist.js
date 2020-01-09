@@ -11,14 +11,6 @@ class Wishlist extends Model {
     return this.belongsToMany('App/Models/Products/Product')
       .pivotModel('App/Models/Clients/WishlistProduct')
       .fetch()
-      .then(({rows: products = []}) => {
-        //remove unnecesary field "pivot"
-        const cleanProducts = products.map(product => {
-          product.pivot && delete product.pivot
-          return product
-        })
-        return cleanProducts || []
-      })
   }
 }
 

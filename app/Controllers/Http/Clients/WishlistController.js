@@ -82,11 +82,13 @@ class WishlistController {
         product_id: productId,
         wishlist_id: wishlist.id
       })
+      const updatedProducts = await wishlist.products()
+
       return {
         message: 'added product to wishlist',
         data: {
           ...wishlist.$attributes,
-          products: wishlistProducts
+          products: updatedProducts
         }
       }
     }
@@ -102,12 +104,23 @@ class WishlistController {
    * @param {Response} ctx.response
    */
   async destroy({params, request, response}) {
-    const {id: clientId} = params
-    const wishlist = await WishlistModel.findBy('client_id', clientId)
-    const {productId} = request.all()
-    const wishlistProducts = await wishlist.products()
-    //clean the wishlist-products
-    return {message: 'hello there'}
+    const result = await this.checkProductStatusInWishlist({
+      params,
+      request
+    })
+    const { wishlist, wishlistProducts, isProductAdded, productExist, productId } = result // prettier-ignore
+    if (!isProductAdded) {
+      response.badRequest({message: `This product isn't in wishlist`})
+    } else if (!productExist) {
+      response.badRequest({message: ' does not exists'})
+    } else {
+      const pivotProductInWishlist = await WishlistProductsModel.query()
+        .where('product_id', '=', productExist.id)
+        .where('wishlist_id', '=', wishlist.id)
+        .delete()
+      const updatedProducts = await wishlist.products()
+      return {message: 'hello there', data: updatedProducts}
+    }
   }
 
   /**Fetch the wishlist usign the client id in Params.
