@@ -9,7 +9,7 @@ class UserSchema extends Schema {
       // prettier-ignore
       {
         table.increments()
-        table.string('email', 254).notNullable().unique() 
+        table.string('email', 180).notNullable().unique() 
         table.string('name', 100).notNullable()
         table.string('password', 60).notNullable()
         table.enu('type', ['root', 'admin', 'support']).defaultTo('support').notNullable()

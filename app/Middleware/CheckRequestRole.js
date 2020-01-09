@@ -29,8 +29,6 @@ class CheckRequestRole {
     const authHeader = request.header('Authorization')
     const token = authHeader && JWT.decodeFromHeader(authHeader)
     const routeId = Number(request.params.id)
-    /*  Logger.info(request.params)
-     Logger.info(token) */
     const route = request.url()
     if (!token) {
       throw new InvalidRoleException({ route })
