@@ -34,7 +34,7 @@ class WishlistController {
    * @param {Request} ctx.request
    * @param {Response} ctx.response
    */
-  async store({request, response}) {
+  async store({response}) {
     response.serviceUnavailable({
       message: 'wishlist are created everytime that a client is registered'
     })

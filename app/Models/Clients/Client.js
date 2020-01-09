@@ -15,7 +15,7 @@ class Client extends Model {
       await Wishlist.create({
         client_id: client.id
       })
-    });
+    })
     /**
      * A hook to remove the password value before return it to server
      */
@@ -45,6 +45,9 @@ class Client extends Model {
   }
   wishlist() {
     return this.hasOne('App/Models/Clients/Wishlist')
+  }
+  getTickets() {
+    return this.hasMany('App/Models/Clients/Tickets')
   }
 }
 
