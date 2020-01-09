@@ -17,7 +17,7 @@
 const Route = use('Route')
 
 Route.get('/', () => {
-  return { greeting: 'Hello world in JSON' }
+  return {greeting: 'Hello world in JSON'}
 })
 
 const API_V1 = '/api/v1'
@@ -32,18 +32,23 @@ Route.group(() => {
 //Clients
 Route.group(() => {
   Route.resource('/', 'Clients/ClientController').apiOnly()
-  Route.resource('/wishlist', 'Clients/WishlistController').apiOnly().middleware(['role'])
+  Route.resource('/wishlist', 'Clients/WishlistController')
+    .apiOnly()
+    .middleware(['role'])
   Route.post('/auth/sign-up', 'Clients/AuthController.signUp')
   Route.post('/auth/login', 'Clients/AuthController.login')
   Route.post('/auth/forget-password', 'Clients/AuthController.forgetPassword')
   Route.post('/auth/recover-password', 'Clients/AuthController.recoverPassword')
-  Route.resource('/payment', 'Clients/PaymentController/WishlistController').apiOnly()
+  Route.resource(
+    '/payment',
+    'Clients/PaymentController/WishlistController'
+  ).apiOnly()
 }).prefix(`${API_V1}/clients`)
 
 //Products
 Route.group(() => {
   Route.resource('/categories', 'Products/CategoryController').apiOnly()
-  Route.resource('/', 'Products/ProductController').apiOnly().validator(new Map([
-    [['products.store'], ['Products/Store']]
-  ]))
+  Route.resource('/', 'Products/ProductController')
+    .apiOnly()
+    .validator(new Map([[['products.store'], ['Products/Store']]]))
 }).prefix(`${API_V1}/products`)

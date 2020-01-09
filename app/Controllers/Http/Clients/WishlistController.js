@@ -7,7 +7,7 @@
 const WishlistModel = use('App/Models/Clients/Wishlist')
 const WishlistProductsModel = use('App/Models/Clients/WishlistProduct')
 const Logger = use('Logger')
-
+const Product = use('App/Models/Products/Product')
 /**
  * Resourceful controller for interacting with wishlists
  */
@@ -70,21 +70,29 @@ class WishlistController {
     const {id: clientId} = params
     const {productId} = request.all()
     const wishlist = await WishlistModel.findBy('client_id', clientId)
-    Logger.info('wishlist_id' + wishlist.id)
-    const wishlistProducts =
-      (await WishlistProductsModel.findBy('wishlist_id', wishlist.id)) || []
-    Logger.info(JSON.stringify(wishlistProducts))
+    const wishlistProducts = await wishlist.products()
     const isProductAdded = wishlistProducts.find(
-      product => product.id === Number(productId)
+      product => product && product.id === Number(productId)
     )
-    if (isProductAdded) {
-      response.badRequest({message: 'product already in wishlist'})
-    } else {
-      await WishlistProductsModel.create({
-        product_id: productId,
-        wishlist_id: wishlist.id
-      })
-      return {message: 'added product to wishlist', data: wishlist}
+    if (isProductAdded) response.badRequest({message: 'product already in wishlist'})
+    else {
+      const productExist = await Product.find(productId)
+
+      if (!productExist)
+        response.badRequest({message: 'This product does not exists'})
+      else {
+        await WishlistProductsModel.create({
+          product_id: productId,
+          wishlist_id: wishlist.id
+        })
+        return {
+          message: 'added product to wishlist',
+          data: {
+            ...wishlist.$attributes,
+            products: wishlistProducts
+          }
+        }
+      }
     }
   }
 
