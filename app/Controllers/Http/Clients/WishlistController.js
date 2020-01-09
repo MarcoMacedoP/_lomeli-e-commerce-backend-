@@ -53,6 +53,7 @@ class WishlistController {
   async show({params}) {
     const {id: clientId} = params
     const wishlist = await WishlistModel.findBy('client_id', clientId)
+    wishlist.products = await wishlist.products()
     return {message: 'get a client wishlist', data: wishlist}
   }
 
@@ -71,7 +72,7 @@ class WishlistController {
       params,
       request
     })
-    const { wishlist, wishlistProducts, isProductAdded, productExist, productId } = result // prettier-ignore
+    const { wishlist, isProductAdded, productExist, productId } = result // prettier-ignore
 
     if (isProductAdded) {
       response.badRequest({message: 'product already in wishlist'})
@@ -114,7 +115,7 @@ class WishlistController {
     } else if (!productExist) {
       response.badRequest({message: ' does not exists'})
     } else {
-      const pivotProductInWishlist = await WishlistProductsModel.query()
+      await WishlistProductsModel.query()
         .where('product_id', '=', productExist.id)
         .where('wishlist_id', '=', wishlist.id)
         .delete()
