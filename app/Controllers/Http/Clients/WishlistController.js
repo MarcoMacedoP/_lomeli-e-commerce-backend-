@@ -67,30 +67,26 @@ class WishlistController {
    * @param {Response} ctx.response
    */
   async update({params, request, response}) {
-    const {id: clientId} = params
-    const {productId} = request.all()
-    const wishlist = await WishlistModel.findBy('client_id', clientId)
-    const wishlistProducts = await wishlist.products()
-    const isProductAdded = wishlistProducts.find(
-      product => product && product.id === Number(productId)
-    )
-    if (isProductAdded) response.badRequest({message: 'product already in wishlist'})
-    else {
-      const productExist = await Product.find(productId)
+    const result = await this.checkProductStatusInWishlist({
+      params,
+      request
+    })
+    const { wishlist, wishlistProducts, isProductAdded, productExist, productId } = result // prettier-ignore
 
-      if (!productExist)
-        response.badRequest({message: 'This product does not exists'})
-      else {
-        await WishlistProductsModel.create({
-          product_id: productId,
-          wishlist_id: wishlist.id
-        })
-        return {
-          message: 'added product to wishlist',
-          data: {
-            ...wishlist.$attributes,
-            products: wishlistProducts
-          }
+    if (isProductAdded) {
+      response.badRequest({message: 'product already in wishlist'})
+    } else if (!productExist) {
+      response.badRequest({message: 'This product does not exists'})
+    } else {
+      await WishlistProductsModel.create({
+        product_id: productId,
+        wishlist_id: wishlist.id
+      })
+      return {
+        message: 'added product to wishlist',
+        data: {
+          ...wishlist.$attributes,
+          products: wishlistProducts
         }
       }
     }
@@ -108,8 +104,32 @@ class WishlistController {
   async destroy({params, request, response}) {
     const {id: clientId} = params
     const wishlist = await WishlistModel.findBy('client_id', clientId)
+    const {productId} = request.all()
+    const wishlistProducts = await wishlist.products()
     //clean the wishlist-products
     return {message: 'hello there'}
+  }
+
+  /**Fetch the wishlist usign the client id in Params.
+   * After that search the product usign the productId recievied in request.
+   * @returns { wishlist, wishlistProducts, isProductAdded, productExist}
+   *
+   * @param {*} ctx
+   * @param {Request} ctx.request
+   * @param {Response} ctx.response
+   */
+  async checkProductStatusInWishlist({params, request}) {
+    const {id: clientId} = params
+    const wishlist = await WishlistModel.findBy('client_id', clientId)
+    const {productId} = request.all()
+    const wishlistProducts = await wishlist.products()
+    const isProductAdded = wishlistProducts.find(
+      product => product && product.id === Number(productId)
+    )
+    Logger.info(typeof productId)
+    const productExist = await Product.find(productId)
+    Logger.info(JSON.stringify(productExist))
+    return {wishlist, wishlistProducts, isProductAdded, productExist, productId}
   }
 }
 
